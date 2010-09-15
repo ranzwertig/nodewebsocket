@@ -2,7 +2,6 @@
 // Compatible with node v0.2.1
 // Author: Christian Ranz http://github.com/ranzwertig
 // License: MIT
-// Based on: http://github.com/ncr/node.ws.js
 
 var sys = require('sys');
 
