@@ -16,7 +16,9 @@ Module.prototype.onConnect = function(connection) {
 Module.prototype.onData = function(connection) {
   for (var i in members) {
     var c = members[i];
-    c.write(connection == c ? "You: " + connection.data : connection.data);
+    if (connection != c) {
+      c.write(connection.data); 
+    }
   }
 };
 
