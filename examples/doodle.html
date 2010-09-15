@@ -19,10 +19,12 @@
           started = false,
           webSocket,
           remoteLock = false,
-          clientLock = false;
+          clientLock = false,
+          moveFactor = 8;
         
+        var moveOffset = moveFactor;
         $('#example').bind('mousemove', function(ev) {
-          if (!remoteLock) {
+          if (!remoteLock && moveOffset == 0) {
             var x, y;
             var mouse = 8;
             // Get the mouse position relative to the canvas element.
@@ -46,7 +48,9 @@
               webSocket.send('E;' + x + ';' + y);
               clientLock = false;
             } 
+            moveOffset = moveFactor;
           }
+          moveOffset -= 1;
         });
         
         $('#example').bind('mousedown', function() {
