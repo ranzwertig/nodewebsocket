@@ -34,20 +34,22 @@
               y = ev.offsetY - mouse;
             }
             if (!started && paint) { 
+              clientLock = true;
               context.strokeStyle = '#05AFDA';
               context.beginPath();
               context.moveTo(x, y);
+              started = true;
               webSocket.send('B;' + x + ';' + y);
             } else if (paint){
               context.lineTo(x, y);
               context.stroke();
               webSocket.send('E;' + x + ';' + y);
+              clientLock = false;
             } 
           }
         });
         
         $('#example').bind('mousedown', function() {
-          clientLock = true;
           if (mode == 'paint') {
             paint = true;
           }          
@@ -56,7 +58,6 @@
         $('#example').bind('mouseup', function(){
           paint = false;
           started = false;
-          clientLock = false;
         });
         
         var canvas = document.getElementById("example"); 
