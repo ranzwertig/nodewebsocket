@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Doodle</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.min.js"></script>
+    <style>
+      #example {
+        cursor:pointer;
+        border: 1px solid #000;
+      }
+    </style>
+    <script>  
+      $(document).ready(function() {
+        
+        var context,
+          mode = 'paint',
+          paint = false,
+          started = false,
+          webSocket,
+          remoteLock = false,
+          clientLock = false;
+        
+        $('#example').bind('mousemove', function(ev) {
+          if (!remoteLock) {
+            var x, y;
+            var mouse = 8;
+            // Get the mouse position relative to the canvas element.
+            if (ev.layerX || ev.layerX == 0) { // Firefox
+              x = ev.layerX - mouse;
+              y = ev.layerY - mouse;
+            } else if (ev.offsetX || ev.offsetX == 0) { // Opera
+              x = ev.offsetX - mouse;
+              y = ev.offsetY - mouse;
+            }
+            if (!started && paint) {
+              clientLock = true;
+              context.strokeStyle = '#05AFDA';
+              context.beginPath();
+              context.moveTo(x, y);
+              started = true;
+              webSocket.send('B;' + x + ';' + y);
+            } else if (paint){
+              context.lineTo(x, y);
+              context.stroke();
+              webSocket.send('E;' + x + ';' + y);
+              clientLock = false;
+            } 
+          }
+        });
+        
+        $('#example').bind('mousedown', function() {
+          if (mode == 'paint') {
+            paint = true;
+          }          
+        });
+        
+        $('#example').bind('mouseup', function(){
+          paint = false;
+          started = false;
+        });
+        
+        var canvas = document.getElementById("example"); 
+        context = canvas.getContext("2d");;
+        context.strokeStyle = '#05AFDA';
+        context.lineWidth = 2;        
+        
+        webSocket = new WebSocket('ws://localhost:8080/distributor');
+
+        webSocket.onopen = function(event){
+            $('#status').html('connected');
+        };
+    
+        webSocket.onmessage = function(event){
+          if (!clientLock) {
+            var message = event.data.split(';');
+            var action = message[0];
+            var x = message[1];
+            var y = message[2];
+            if (action == 'B') {
+              remoteLock = true;
+              context.strokeStyle = '#F4A83D';
+              context.beginPath();
+              context.moveTo(x, y);
+            }
+            else if (action == 'E') {
+              context.lineTo(x, y);
+              context.stroke();
+              remoteLock = false;
+            }
+          }
+        };
+        
+        webSocket.onclose = function(event){
+           $('#status').html('socket closed');
+        };
+        
+      });
+    </script>
+  </head>
+  <body>
+    <canvas id="example" width="600" height="600">
+      not able to load canvas element
+    </canvas>
+    <span id="status">opening socket</span>
+  </body>
+</html>
