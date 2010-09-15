@@ -24,13 +24,13 @@ Module.prototype.onError = function(connection) {
 The connection Object looks like:
 
 connection
+
 * data //the data sent to the socket
 * remoteAddress //the remoteAddress
 * exception //if an exception is thrown 
 * function write(dataToWrite) //function to write to the socket
 * function end() //function to close the socket
 * socket //the original socket object used inside the server
-
 
 ## Clientside
 
@@ -50,4 +50,4 @@ webSocket.onclose = function(event){
 
 ## Author
 
-Christian Ranz - http://twitter.com/ranzwertig - http://wwwchristianranz.com
+Christian Ranz - [ranzwertig @ twitter](http://twitter.com/ranzwertig) - [Blog](http://wwwchristianranz.com)
